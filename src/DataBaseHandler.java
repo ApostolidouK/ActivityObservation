@@ -24,7 +24,6 @@ public class DataBaseHandler {
     boolean passed;
 
     //classes
-    String OBSERVATION = "http://www.w3.org/ns/sosa/Observation";
     String BMI_PROPERTY = ONTOLOGY_URI+"BMIProperty";
     String CALORIES_PROPERTY = ONTOLOGY_URI+"CaloriesProperty";
     String HEART_RATE_PROPERTY = ONTOLOGY_URI+"HeartRateProperty";
@@ -44,9 +43,10 @@ public class DataBaseHandler {
     //properties
     String OBSERVED_PROPERTY = "http://www.w3.org/ns/sosa/observedProperty";
     String IS_OBSERVATION_FOR = ONTOLOGY_URI+"isObservationFor";
+    String HAS_OBSERVATION = ONTOLOGY_URI+"hasObservation";
     String MEASURED = ONTOLOGY_URI+"measured";
     String TIME = ONTOLOGY_URI+"time";
-    String MEASUREMENT_FOR_USER = ONTOLOGY_URI+"MeasurementForUser";
+    String INVERSE_OF = "http://www.w3.org/2002/07/owl#inverseOf";
 
     public void connect(){
         manager = new RemoteRepositoryManager(SERVER);
@@ -61,29 +61,21 @@ public class DataBaseHandler {
         ValueFactory fact = SimpleValueFactory.getInstance();
         for (List<String> str : HeartRateInfo){
             IRI obs;
-            IRI measurement;
             // str --> userID, date, heartRate
             if (choice==1) {
                 obs = iri(ONTOLOGY_URI + str.get(0) + "_DailyHeartRateObservation_on_" + str.get(1));
-                measurement = iri(DAILY_HEART_RATE + "_" + str.get(1) + "_" + str.get(0));
-                model.add(measurement, RDF.TYPE, iri(DAILY_HEART_RATE));
+                model.add(obs, RDF.TYPE, iri(DAILY_HEART_RATE));
             } else {
                 obs = iri(ONTOLOGY_URI + str.get(0) + "_HourlyHeartRateObservation_on_" + str.get(1));
-                measurement = iri(HOURLY_HEART_RATE + "_" + str.get(1) + "_" + str.get(0));
-                model.add(measurement, RDF.TYPE, iri(HOURLY_HEART_RATE));
+                model.add(obs, RDF.TYPE, iri(HOURLY_HEART_RATE));
             }
             IRI obs_prop = iri(ONTOLOGY_URI+"HeartRate");
             IRI userID = iri(ONTOLOGY_URI+str.get(0));
-            // TRIPLETS
-            model.add(obs, RDF.TYPE, iri(OBSERVATION));
             model.add(obs, iri(OBSERVED_PROPERTY), obs_prop);
             model.add(obs_prop, RDF.TYPE, iri(HEART_RATE_PROPERTY));
             model.add(obs, iri(IS_OBSERVATION_FOR), userID);
             model.add(obs, iri(MEASURED), fact.createLiteral(str.get(2), XSD.LONG));
             model.add(obs, iri(TIME), fact.createLiteral(str.get(1), XSD.DATETIME));
-            model.add(measurement, iri(MEASUREMENT_FOR_USER), userID);
-            model.add(measurement, iri(MEASURED), fact.createLiteral(str.get(2), XSD.LONG));
-            model.add(measurement, iri(TIME), fact.createLiteral(str.get(1), XSD.DATETIME));
         }
         connection.add(model);
         //Shacl validation
@@ -110,29 +102,22 @@ public class DataBaseHandler {
         ValueFactory fact = SimpleValueFactory.getInstance();
         for (List<String> str : StepInfo){
             // str --> userID, date, steps
-            IRI obs, measurement;
+            IRI obs;
             if (choice==1) {
                 obs = iri(ONTOLOGY_URI + str.get(0) + "_DailyStepObservation_on_" + str.get(1));
-                measurement = iri(DAILY_STEPS + "_" + str.get(1) + "_" + str.get(0));
-                model.add(measurement, RDF.TYPE, iri(DAILY_STEPS));
+                model.add(obs, RDF.TYPE, iri(DAILY_STEPS));
             }
             else {
                 obs = iri(ONTOLOGY_URI + str.get(0) + "_HourlyStepObservation_on_" + str.get(1));
-                measurement = iri(HOURLY_STEPS + "_" + str.get(1) + "_" + str.get(0));
-                model.add(measurement, RDF.TYPE, iri(HOURLY_STEPS));
+                model.add(obs, RDF.TYPE, iri(HOURLY_STEPS));
             }
             IRI obs_prop = iri(ONTOLOGY_URI+"Steps");
             IRI userID = iri(ONTOLOGY_URI+str.get(0));
-            // TRIPLETS
-            model.add(obs, RDF.TYPE, iri(OBSERVATION));
             model.add(obs, iri(OBSERVED_PROPERTY), obs_prop);
             model.add(obs_prop, RDF.TYPE, iri(STEPS_PROPERTY));
             model.add(obs, iri(IS_OBSERVATION_FOR), userID);
             model.add(obs, iri(MEASURED), fact.createLiteral(str.get(2), XSD.LONG));
             model.add(obs, iri(TIME), fact.createLiteral(str.get(1), XSD.DATETIME));
-            model.add(measurement, iri(MEASUREMENT_FOR_USER), userID);
-            model.add(measurement, iri(MEASURED), fact.createLiteral(str.get(2), XSD.LONG));
-            model.add(measurement, iri(TIME), fact.createLiteral(str.get(1), XSD.DATETIME));
         }
         connection.add(model);
         //Shacl validation
@@ -162,18 +147,12 @@ public class DataBaseHandler {
             IRI obs = iri(ONTOLOGY_URI+str.get(0)+"_SleepObservation_on_"+ str.get(1));
             IRI obs_prop = iri(ONTOLOGY_URI+"Sleep");
             IRI userID = iri(ONTOLOGY_URI+str.get(0));
-            // TRIPLETS
-            model.add(obs, RDF.TYPE, iri(OBSERVATION));
+            model.add(obs, RDF.TYPE, iri(DAILY_SLEEP));
             model.add(obs, iri(OBSERVED_PROPERTY), obs_prop);
             model.add(obs_prop, RDF.TYPE, iri(SLEEP_PROPERTY));
             model.add(obs, iri(IS_OBSERVATION_FOR), userID);
             model.add(obs, iri(MEASURED), fact.createLiteral(str.get(2), XSD.LONG));
             model.add(obs, iri(TIME), fact.createLiteral(str.get(1), XSD.DATETIME));
-            IRI measurement = iri(DAILY_SLEEP + "_" + str.get(1) + "_" + str.get(0));
-            model.add(measurement, RDF.TYPE, iri(DAILY_SLEEP));
-            model.add(measurement, iri(MEASUREMENT_FOR_USER), userID);
-            model.add(measurement, iri(MEASURED), fact.createLiteral(str.get(2), XSD.LONG));
-            model.add(measurement, iri(TIME), fact.createLiteral(str.get(1), XSD.DATETIME));
         }
         connection.add(model);
         //Shacl validation
@@ -199,30 +178,24 @@ public class DataBaseHandler {
         Model model = new TreeModel();
         ValueFactory fact = SimpleValueFactory.getInstance();
         for (List<String> str : CalorieInfo){
+            IRI obs;
             // str --> userID, date, calories
-            IRI obs, measurement;
             if (choice==1) {
                 obs = iri(ONTOLOGY_URI + str.get(0) + "_DailyCaloriesObservation_on_" + str.get(1));
-                measurement = iri(DAILY_CALORIES + "_" + str.get(1) + "_" + str.get(0));
-                model.add(measurement, RDF.TYPE, iri(DAILY_CALORIES));
+                model.add(obs, RDF.TYPE, iri(DAILY_CALORIES));
             }
             else {
                 obs = iri(ONTOLOGY_URI + str.get(0) + "_HourlyCaloriesObservation_on_" + str.get(1));
-                measurement = iri(HOURLY_CALORIES + "_" + str.get(1) + "_" + str.get(0));
-                model.add(measurement, RDF.TYPE, iri(HOURLY_CALORIES));
+                model.add(obs, RDF.TYPE, iri(HOURLY_CALORIES));
             }
             IRI obs_prop = iri(ONTOLOGY_URI+"Calories");
             IRI userID = iri(ONTOLOGY_URI+str.get(0));
             // TRIPLETS
-            model.add(obs, RDF.TYPE, iri(OBSERVATION));
             model.add(obs, iri(OBSERVED_PROPERTY), obs_prop);
             model.add(obs_prop, RDF.TYPE, iri(CALORIES_PROPERTY));
             model.add(obs, iri(IS_OBSERVATION_FOR), userID);
             model.add(obs, iri(MEASURED), fact.createLiteral(str.get(2), XSD.LONG));
             model.add(obs, iri(TIME), fact.createLiteral(str.get(1), XSD.DATETIME));
-            model.add(measurement, iri(MEASUREMENT_FOR_USER), userID);
-            model.add(measurement, iri(MEASURED), fact.createLiteral(str.get(2), XSD.LONG));
-            model.add(measurement, iri(TIME), fact.createLiteral(str.get(1), XSD.DATETIME));
         }
         connection.add(model);
         //Shacl validation
@@ -252,18 +225,12 @@ public class DataBaseHandler {
             IRI obs = iri(ONTOLOGY_URI+str.get(0)+"_WeightObservation_on_"+ str.get(1));
             IRI obs_prop = iri(ONTOLOGY_URI+"Weight");
             IRI userID = iri(ONTOLOGY_URI+str.get(0));
-            // TRIPLETS
-            model.add(obs, RDF.TYPE, iri(OBSERVATION));
+            model.add(obs, RDF.TYPE, iri(DAILY_WEIGHT));
             model.add(obs, iri(OBSERVED_PROPERTY), obs_prop);
             model.add(obs_prop, RDF.TYPE, iri(WEIGHT_PROPERTY));
             model.add(obs, iri(IS_OBSERVATION_FOR), userID);
             model.add(obs, iri(MEASURED), fact.createLiteral(str.get(2), XSD.DOUBLE));
             model.add(obs, iri(TIME), fact.createLiteral(str.get(1), XSD.DATETIME));
-            IRI measurement = iri(DAILY_WEIGHT + "_" + str.get(1) + "_" + str.get(0));
-            model.add(measurement, RDF.TYPE, iri(DAILY_WEIGHT));
-            model.add(measurement, iri(MEASUREMENT_FOR_USER), userID);
-            model.add(measurement, iri(MEASURED), fact.createLiteral(str.get(2), XSD.DOUBLE));
-            model.add(measurement, iri(TIME), fact.createLiteral(str.get(1), XSD.DATETIME));
         }
         connection.add(model);
         //Shacl validation
@@ -293,18 +260,12 @@ public class DataBaseHandler {
             IRI obs = iri(ONTOLOGY_URI+str.get(0)+"_BMIObservation_on_"+ str.get(1));
             IRI obs_prop = iri(ONTOLOGY_URI+"BMI");
             IRI userID = iri(ONTOLOGY_URI+str.get(0));
-            // TRIPLETS
-            model.add(obs, RDF.TYPE, iri(OBSERVATION));
+            model.add(obs, RDF.TYPE, iri(DAILY_BMI));
             model.add(obs, iri(OBSERVED_PROPERTY), obs_prop);
             model.add(obs_prop, RDF.TYPE, iri(BMI_PROPERTY));
             model.add(obs, iri(IS_OBSERVATION_FOR), userID);
             model.add(obs, iri(MEASURED), fact.createLiteral(str.get(2), XSD.DOUBLE));
             model.add(obs, iri(TIME), fact.createLiteral(str.get(1), XSD.DATETIME));
-            IRI measurement = iri(DAILY_BMI + "_" + str.get(1) + "_" + str.get(0));
-            model.add(measurement, RDF.TYPE, iri(DAILY_BMI));
-            model.add(measurement, iri(MEASUREMENT_FOR_USER), userID);
-            model.add(measurement, iri(MEASURED), fact.createLiteral(str.get(2), XSD.DOUBLE));
-            model.add(measurement, iri(TIME), fact.createLiteral(str.get(1), XSD.DATETIME));
         }
         connection.add(model);
         //Shacl validation
