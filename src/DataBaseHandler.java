@@ -43,10 +43,8 @@ public class DataBaseHandler {
     //properties
     String OBSERVED_PROPERTY = "http://www.w3.org/ns/sosa/observedProperty";
     String IS_OBSERVATION_FOR = ONTOLOGY_URI+"isObservationFor";
-    String HAS_OBSERVATION = ONTOLOGY_URI+"hasObservation";
     String MEASURED = ONTOLOGY_URI+"measured";
     String TIME = ONTOLOGY_URI+"time";
-    String INVERSE_OF = "http://www.w3.org/2002/07/owl#inverseOf";
 
     public void connect(){
         manager = new RemoteRepositoryManager(SERVER);
