@@ -46,11 +46,13 @@ public class FileHandler {
                 String[] st1 = date.split(" ");
                 String[] st2 = date.split(":");
                 date = st2[0]+":00:00 "+st1[2];
-                //bring date to yyyy/MM/dd HH:mm:ss a format for xsd:dateTime
+                //bring date to yyyy/MM/ddTHH:mm:ss a format for xsd:dateTime
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
                 Date conv = sdf.parse(date);
-                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 date = sdf2.format(conv);
+                String[] st3 = date.split(" ");
+                date = st3[0]+"T"+st3[1];
             }
             //group measurements that belong to the same user on the same day/hour
             List<String> s = new ArrayList<>();
@@ -170,11 +172,13 @@ public class FileHandler {
                 String[] st1 = date.split(" ");
                 String[] st2 = date.split(":");
                 date = st2[0]+":00:00 "+st1[2];
-                //bring date to yyyy/MM/dd HH:mm:ss a format for xsd:dateTime
+                //bring date to yyyy/MM/ddTHH:mm:ss a format for xsd:dateTime
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
                 Date conv = sdf.parse(date);
-                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 date = sdf2.format(conv);
+                String[] st3 = date.split(" ");
+                date = st3[0]+"T"+st3[1];
                 s.add(next[0]); s.add(date); s.add(next[2]);
                 finalHourlySteps.add(s);
             }
@@ -219,11 +223,13 @@ public class FileHandler {
                 String[] st1 = date.split(" ");
                 String[] st2 = date.split(":");
                 date = st2[0]+":00:00 "+st1[2];
-                //bring date to yyyy/MM/dd HH:mm:ss a format for xsd:dateTime
+                //bring date to yyyy/MM/ddTHH:mm:ss a format for xsd:dateTime
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
                 Date conv = sdf.parse(date);
-                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 date = sdf2.format(conv);
+                String[] st3 = date.split(" ");
+                date = st3[0]+"T"+st3[1];
                 s.add(next[0]); s.add(date); s.add(next[2]);
                 finalHourlyCalories.add(s);
             }
