@@ -11,16 +11,14 @@ $(function() {
     const frequency = $('#frequency').val();
     
     // checking if all fields are filled
+    const divShowData = document.getElementById('error');
     if (userID == '') {
-      const divShowData = document.getElementById('error');
       divShowData.innerHTML = "Please enter UserID";
       return;
     } else if (startDate == '') {
-      const divShowData = document.getElementById('error');
       divShowData.innerHTML = "Please enter Beginning Date";
       return;
     } else if (endDate == '') {
-      const divShowData = document.getElementById('error');
       divShowData.innerHTML = "Please enter End Date";
       return;
     } 
@@ -43,6 +41,8 @@ $(function() {
       },
       error: function () {
         console.log('Fail');
+        document.getElementById('error').innerHTML = "";
+        divShowData.innerHTML = "There has been a problem connecting to the database.";
       }
     });
   });
@@ -56,12 +56,6 @@ function SPARQLquery(userID, activity_type, startDate, endDate, frequency) {
   'PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n' +
   'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n' +
   'PREFIX sosa: <http://www.w3.org/ns/sosa/>';
-
-  // buliding the SPARQL query
-  var QUERY = PREFIXES + 
-              'SELECT ?date ?value '+
-              'WHERE { ?user act:hasObservation ?obs.' + 
-                      `?user owl:sameAs act:${userID}.` ;
 
   // defying data type (activity type and frequency)                       
   var obs_type = '';
@@ -90,6 +84,11 @@ function SPARQLquery(userID, activity_type, startDate, endDate, frequency) {
   } else {
     obs_type = 'DailyBMI';
   }
+
+  // buliding the SPARQL query
+  var QUERY = PREFIXES + 
+              'SELECT ?date ?value '+
+              `WHERE { act:${userID} act:hasObservation ?obs.`;
 
   QUERY += `?obs a act:${obs_type}.` +
             '?obs act:time ?date.' +
